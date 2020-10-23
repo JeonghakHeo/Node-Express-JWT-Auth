@@ -6,7 +6,11 @@ const app = express();
 
 // middleware
 app.use(express.static('public'));
-
+/* it takes any json data that comes along with a request
+   and it passes it into a javascript object so we can then use it inside the code
+   and it attatches that object with that data to the *reqeust object*.
+*/
+app.use(express.json());
 // view engine
 app.set('view engine', 'ejs');
 
