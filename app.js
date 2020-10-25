@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.static('public'));
    and it attatches that object with that data to the *reqeust object*.
 */
 app.use(express.json());
+app.use(cookieParser());
 // view engine
 app.set('view engine', 'ejs');
 
@@ -25,3 +27,25 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
 app.get('/', (req, res) => res.render('home'));
 app.get('/smoothies', (req, res) => res.render('smoothies'));
 app.use(authRoutes);
+
+// cookies
+app.get('/set-cookies', (req, res) => {
+
+  //res.setHeader('Set-Cookie', 'newUser=true');
+
+  res.cookie('newUser', false);
+  // secure cookies will be set only over https, httpOnly cookies are not available to see from console.
+  res.cookie('isEmployee', true, { maxAge: 1000 * 60 * 60 * 24, secure: true, httpOnly: true });
+
+  res.send('you got the cookies');
+
+});
+
+app.get('/read-cookies', (req, res) => {
+
+  const cookies = req.cookies;
+  console.log(cookies);
+
+  res.json(cookies);
+
+});
