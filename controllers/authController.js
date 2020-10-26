@@ -1,5 +1,8 @@
 const User = require('../models/User');
 
+// npm i jsonwebtoken
+const jwt = require('jsonwebtoken');
+
 // handle errors
 const handleErros = (err) => {
   console.log(err.message, err.code);
@@ -27,6 +30,13 @@ const handleErros = (err) => {
   }
     return errors;
 }
+const maxAge = 3 * 24 * 60 * 60; // 3 days in second unlike cookies which is in mil sec
+const createToken = (id) => {
+  //              header        payload
+  return jwt.sign({ id }, 'net ninja secret', {
+    expiresIn: maxAge // this token is valid for 3 days 
+  }); // this function returns a token with a signature
+}
 
 // controller actions
 module.exports.signup_get = (req, res) => {
@@ -42,7 +52,9 @@ module.exports.signup_post = async (req, res) => {
 
   try {
     const user = await User.create({ email, password });
-    res.status(201).json(user);
+    const token = createToken(user._id);
+    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
+    res.status(201).json({ user: user._id });
   }
   catch (err) {
     const errors = handleErros(err);
