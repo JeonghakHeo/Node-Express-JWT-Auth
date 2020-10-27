@@ -31,6 +31,19 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// static method to login user
+userSchema.statics.login = async function(email, password) {
+  const user = await this.findOne({ email: email }); // check if the email user entered exists in db
+  if (user) {
+    //                                unhasehd   hashed in db
+    const auth = await bcrypt.compare(password, user.password);
+    if (auth) {
+      return user;
+    } throw Error('incorrect password');
+  }
+  throw Error('incorrect email')
+}
+
 // model('user') <- singular
 const User = mongoose.model('user', userSchema);
 
