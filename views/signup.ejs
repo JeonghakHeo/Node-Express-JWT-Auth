@@ -1,18 +1,20 @@
 <%- include('partials/header'); -%>
 
-<form>
+<form action="/signup">
   <h2>Sign up</h2>
   <label for="email">Email</label>
-  <input type="text" name="email" required>
+  <input type="text" name="email" required />
   <div class="email error"></div>
   <label for="password">Password</label>
-  <input type="password" name="password" required>
+  <input type="password" name="password" required />
   <div class="password error"></div>
   <button>Sign up</button>
 </form>
+
+<%- include('partials/footer'); -%>
+
 <script>
   const form = document.querySelector('form');
-  
   const emailError = document.querySelector('.email.error');
   const passwordError = document.querySelector('.password.error');
 
@@ -22,27 +24,33 @@
     // reset errors
     emailError.textContent = '';
     passwordError.textContent = '';
-    
-    // get the values
+
+    // get values
     const email = form.email.value;
     const password = form.password.value;
 
     try {
       const res = await fetch('/signup', { 
-        method: 'POST',
+        method: 'POST', 
         body: JSON.stringify({ email, password }),
-        headers: { 'Content-Type': 'application/json'}
+        headers: {'Content-Type': 'application/json'}
       });
-      const data = await res.json();
+      
+      // checking data we get back in authController.js
+      const data = await res.json(); // res.status(201).json({ user: user._id }) or res.status(400).json({ errors })
       console.log(data);
       if (data.errors) {
         emailError.textContent = data.errors.email;
         passwordError.textContent = data.errors.password;
       }
+      if (data.user) {
+        location.assign('/');
+      }
+
     }
     catch (err) {
       console.log(err);
     }
+
   });
 </script>
-<%- include('partials/footer'); -%>
