@@ -86,3 +86,9 @@ module.exports.login_post = async (req, res) => {
     res.status(400).json({ errors });
   }
 }
+
+module.exports.logout_get = (req, res) => {
+  // replace token with an empty string and set it to expire very quick
+  res.cookie('jwt', '', { maxAge: 1 });
+  res.redirect('/')
+}
